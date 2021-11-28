@@ -1,123 +1,39 @@
-import { Component } from 'react';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
-import { countNeighbours } from '../../utils';
-import { InitControls, RunControls } from './Controls';
+import { switchCell } from '../../redux/actions';
+import { isPlayingSelector } from '../../redux/selectors';
+import Controls from './Controls';
 
-class Field extends Component {
-  constructor(props) {
-    super(props);
-
-    this.size = props.size || 30;
-
-    this.blankCells = Array(this.size)
-      .fill(null)
-      .map(() => Array(this.size).fill(false));
-
-    this.state = {
-      cells: this.blankCells,
-      intervalID: null,
-      generation: 0,
-      initialCells: [],
-    };
-  }
-
-  clear = () => {
-    this.setState({ cells: this.blankCells });
-  };
-
-  isPlaying = () => this.state.intervalID !== null;
-
-  clickHandler = (e) => {
-    if (this.state.generation > 0) return;
+function Field({ cells, isPlaying, switchCell }) {
+  const clickHandler = (e) => {
+    if (isPlaying) return;
 
     const { rowIndex } = e.target.parentElement;
     const { cellIndex } = e.target;
-    const { cells } = this.state;
 
-    const newCellState = cells.map((row) => Array.from(row));
-    newCellState[rowIndex][cellIndex] = !cells[rowIndex][cellIndex];
-
-    this.setState({ cells: newCellState });
+    switchCell(rowIndex, cellIndex);
   };
 
-  step = () => {
-    const { cells } = this.state;
-    const newCellState = cells.map((row) => Array.from(row));
-
-    for (let ri = 0; ri < this.size; ri++) {
-      for (let ci = 0; ci < this.size; ci++) {
-        const count = countNeighbours(ri, ci, cells);
-        if (cells[ri][ci] && (count < 3 || count > 4)) {
-          newCellState[ri][ci] = false;
-        }
-        if (!cells[ri][ci] && count === 3) {
-          newCellState[ri][ci] = true;
-        }
-      }
-    }
-
-    this.setState((prevState) => ({
-      cells: newCellState,
-      generation: prevState.generation + 1,
-    }));
-  };
-
-  play = () => {
-    if (this.state.intervalID !== null) return;
-    if (this.state.generation === 0)
-      this.setState((prevState) => ({ initialCells: prevState.cells }));
-
-    const newIntervalID = setInterval(this.step, 5);
-    this.setState({ intervalID: newIntervalID });
-  };
-
-  pause = () => {
-    clearInterval(this.state.intervalID);
-    this.setState({ intervalID: null });
-  };
-
-  reset = () => {
-    this.pause();
-    this.setState((prevState) => ({
-      cells: prevState.initialCells,
-      generation: 0,
-    }));
-  };
-
-  render() {
-    return (
-      <div>
-        <div>
-          {this.state.generation > 0 ? (
-            <RunControls
-              play={this.play}
-              pause={this.pause}
-              reset={this.reset}
-              step={this.step}
-              isPlaying={this.isPlaying()}
-            />
-          ) : (
-            <InitControls play={this.play} clear={this.clear} />
-          )}
-        </div>
-        <TableWrapper>
-          {this.state.cells.map((row, ri) => (
-            <tr key={ri}>
-              {row.map((cell, ci) => (
-                <Cell key={ci} alive={cell} onClick={this.clickHandler} />
-              ))}
-            </tr>
+  return (
+    <FieldWrapper>
+      {cells.map((row, ri) => (
+        <tr key={ri}>
+          {row.map((cell, ci) => (
+            <Cell key={ci} alive={cell} onClick={clickHandler} />
           ))}
-        </TableWrapper>
-      </div>
-    );
-  }
+        </tr>
+      ))}
+    </FieldWrapper>
+  );
 }
 
-const TableWrapper = ({ children }) => (
-  <Table>
-    <tbody>{children}</tbody>
-  </Table>
+const FieldWrapper = (props) => (
+  <div>
+    <Controls />
+    <Table>
+      <tbody>{props.children}</tbody>
+    </Table>
+  </div>
 );
 
 const Table = styled.table`
@@ -131,4 +47,11 @@ const Cell = styled.td`
   background-color: ${(props) => (props.alive ? 'black' : 'white')};
 `;
 
-export default Field;
+const mapStateToProps = (state) => ({
+  cells: state.cells,
+  isPlaying: isPlayingSelector(state),
+});
+
+const mapDispatchToProps = { switchCell };
+
+export default connect(mapStateToProps, mapDispatchToProps)(Field);

@@ -10,3 +10,7 @@ export const countNeighbours = (x, y, cells) => {
 
   return count;
 };
+
+export const deepCopyCells = (cells) => {
+  return cells.map((row) => Array.from(row));
+};

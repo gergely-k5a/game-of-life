@@ -1,23 +1,40 @@
 import { Fragment } from 'react';
+import { connect } from 'react-redux';
 
-export const InitControls = ({ clear, play }) => (
-  <Fragment>
+import { clear, pause, play, reset, step } from '../../redux/actions';
+import { isPlayingSelector } from '../../redux/selectors';
+
+const Controls = ({
+  clear,
+  generation,
+  isPlaying,
+  pause,
+  play,
+  reset,
+  step,
+}) => (
+  <div>
     <button onClick={play}>Play</button>
-    <button onClick={clear}>Clear</button>
-  </Fragment>
+    {generation === 0 ? (
+      <button onClick={clear}>Clear</button>
+    ) : (
+      <Fragment>
+        <button onClick={step} disabled={isPlaying}>
+          Step
+        </button>
+        <button onClick={pause} disabled={!isPlaying}>
+          Pause
+        </button>
+        <button onClick={reset}>Reset</button>
+      </Fragment>
+    )}
+  </div>
 );
 
-export const RunControls = ({ play, pause, step, reset, isPlaying }) => (
-  <Fragment>
-    <button onClick={step} disabled={isPlaying}>
-      Step
-    </button>
-    <button onClick={play} disabled={isPlaying}>
-      Play
-    </button>
-    <button onClick={pause} disabled={!isPlaying}>
-      Pause
-    </button>
-    <button onClick={reset}>Reset</button>
-  </Fragment>
-);
+export default connect(
+  (state) => ({
+    generation: state.generation,
+    isPlaying: isPlayingSelector(state),
+  }),
+  { clear, pause, play, reset, step }
+)(Controls);
