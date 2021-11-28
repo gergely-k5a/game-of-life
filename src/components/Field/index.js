@@ -1,30 +1,51 @@
-import { useState } from 'react';
+import { Component } from 'react';
 import styled from 'styled-components';
 import { countNeighbours } from '../../utils';
+import { InitControls, RunControls } from './Controls';
 
-function Field({ size = 30 }) {
-  const cellsInitState = Array(size)
-    .fill(null)
-    .map(() => Array(size).fill(false));
+class Field extends Component {
+  constructor(props) {
+    super(props);
 
-  const [cells, setCells] = useState(cellsInitState);
-  const [intervalID, setIntervalID] = useState(null);
+    this.size = props.size || 30;
 
-  const clickHandler = (e) => {
-    const { rowIndex } = e.target.parentElement;
-    const { cellIndex } = e.target;
+    this.blankCells = Array(this.size)
+      .fill(null)
+      .map(() => Array(this.size).fill(false));
 
-    const newCellState = Array.from(cells);
-    newCellState[rowIndex][cellIndex] = !cells[rowIndex][cellIndex];
+    this.state = {
+      cells: this.blankCells,
+      intervalID: null,
+      generation: 0,
+      initialCells: [],
+    };
+  }
 
-    setCells(newCellState);
+  clear = () => {
+    this.setState({ cells: this.blankCells });
   };
 
-  const step = () => {
-    const newCellState = Array.from(cells);
+  isPlaying = () => this.state.intervalID !== null;
 
-    for (let ri = 0; ri < size; ri++) {
-      for (let ci = 0; ci < size; ci++) {
+  clickHandler = (e) => {
+    if (this.state.generation > 0) return;
+
+    const { rowIndex } = e.target.parentElement;
+    const { cellIndex } = e.target;
+    const { cells } = this.state;
+
+    const newCellState = cells.map((row) => Array.from(row));
+    newCellState[rowIndex][cellIndex] = !cells[rowIndex][cellIndex];
+
+    this.setState({ cells: newCellState });
+  };
+
+  step = () => {
+    const { cells } = this.state;
+    const newCellState = cells.map((row) => Array.from(row));
+
+    for (let ri = 0; ri < this.size; ri++) {
+      for (let ci = 0; ci < this.size; ci++) {
         const count = countNeighbours(ri, ci, cells);
         if (cells[ri][ci] && (count < 3 || count > 4)) {
           newCellState[ri][ci] = false;
@@ -35,47 +56,69 @@ function Field({ size = 30 }) {
       }
     }
 
-    setCells(newCellState);
+    this.setState((prevState) => ({
+      cells: newCellState,
+      generation: prevState.generation + 1,
+    }));
   };
 
-  const startSimulation = () => {
-    if (intervalID !== null) return;
+  play = () => {
+    if (this.state.intervalID !== null) return;
+    if (this.state.generation === 0)
+      this.setState((prevState) => ({ initialCells: prevState.cells }));
 
-    const newIntervalID = setInterval(step, 500);
-    setIntervalID(newIntervalID);
+    const newIntervalID = setInterval(this.step, 5);
+    this.setState({ intervalID: newIntervalID });
   };
 
-  const stopSimulation = () => {
-    clearInterval(intervalID);
-    setIntervalID(null);
+  pause = () => {
+    clearInterval(this.state.intervalID);
+    this.setState({ intervalID: null });
   };
 
-  const FieldWrapper = (props) => (
-    <div>
+  reset = () => {
+    this.pause();
+    this.setState((prevState) => ({
+      cells: prevState.initialCells,
+      generation: 0,
+    }));
+  };
+
+  render() {
+    return (
       <div>
-        <button onClick={step}>Step</button>
-        <button onClick={startSimulation}>Start</button>
-        <button onClick={stopSimulation}>Stop</button>
-      </div>
-
-      <Table>
-        <tbody>{props.children}</tbody>
-      </Table>
-    </div>
-  );
-
-  return (
-    <FieldWrapper>
-      {cells.map((row, ri) => (
-        <tr key={ri}>
-          {row.map((cell, ci) => (
-            <Cell key={ci} alive={cell} onClick={clickHandler} />
+        <div>
+          {this.state.generation > 0 ? (
+            <RunControls
+              play={this.play}
+              pause={this.pause}
+              reset={this.reset}
+              step={this.step}
+              isPlaying={this.isPlaying()}
+            />
+          ) : (
+            <InitControls play={this.play} clear={this.clear} />
+          )}
+        </div>
+        <TableWrapper>
+          {this.state.cells.map((row, ri) => (
+            <tr key={ri}>
+              {row.map((cell, ci) => (
+                <Cell key={ci} alive={cell} onClick={this.clickHandler} />
+              ))}
+            </tr>
           ))}
-        </tr>
-      ))}
-    </FieldWrapper>
-  );
+        </TableWrapper>
+      </div>
+    );
+  }
 }
+
+const TableWrapper = ({ children }) => (
+  <Table>
+    <tbody>{children}</tbody>
+  </Table>
+);
 
 const Table = styled.table`
   border-collapse: collapse;
