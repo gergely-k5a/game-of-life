@@ -1,11 +1,12 @@
 import { Provider } from 'react-redux';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Col, Container, Row } from 'react-bootstrap';
+
 import './App.css';
 import Controls from './components/Controls';
 import Field from './components/Field';
 import Info from './components/Info';
 import store from './store';
-import { Col, Container, Row } from 'react-bootstrap';
 
 function App() {
   return (
