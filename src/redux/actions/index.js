@@ -45,7 +45,7 @@ export const step = () => ({
   type: STEP,
 });
 
-export const switchCell = (x, y) => ({
+export const switchCell = (rowIndex, cellIndex) => ({
   type: SWITCH_CELL,
-  payload: { x, y },
+  payload: { rowIndex, cellIndex },
 });

@@ -46,9 +46,11 @@ export default function reducer(state = initialState, action) {
       };
 
     case SWITCH_CELL:
+      const { rowIndex, cellIndex } = action.payload;
+
       return {
         ...state,
-        cells: switchCell(cells, action.payload),
+        cells: switchCell(cells, rowIndex, cellIndex),
       };
 
     default:
