@@ -5,9 +5,9 @@ export default function Info() {
   const population = useSelector((state) => state.population);
 
   return (
-    <section id="infoBox">
-      <p>Generation: {generation}</p>
-      <p>Population: {population}</p>
+    <section id="infoBox" className="my-3">
+      <span className="me-4">Generation: {generation}</span>
+      <span>Population: {population}</span>
     </section>
   );
 }

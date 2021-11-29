@@ -1,3 +1,4 @@
+import Button from 'react-bootstrap/Button';
 import { Fragment } from 'react';
 import { connect } from 'react-redux';
 
@@ -13,19 +14,28 @@ const Controls = ({
   reset,
   step,
 }) => (
-  <section id="controls">
-    <button onClick={play}>Play</button>
+  <section id="controls" className="d-grid gap-2">
+    {isPlaying ? (
+      <Button onClick={pause} size="lg">
+        Pause
+      </Button>
+    ) : (
+      <Button onClick={play} size="lg">
+        Play
+      </Button>
+    )}
     {generation === 0 ? (
-      <button onClick={clear}>Clear</button>
+      <Button onClick={clear} variant="danger" size="lg">
+        Clear
+      </Button>
     ) : (
       <Fragment>
-        <button onClick={step} disabled={isPlaying}>
+        <Button onClick={step} disabled={isPlaying} size="lg">
           Step
-        </button>
-        <button onClick={pause} disabled={!isPlaying}>
-          Pause
-        </button>
-        <button onClick={reset}>Reset</button>
+        </Button>
+        <Button onClick={reset} variant="warning" size="lg">
+          Reset
+        </Button>
       </Fragment>
     )}
   </section>
