@@ -1,15 +1,14 @@
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { switchCell } from '../redux/actions';
-import { isPlayingSelector } from '../redux/selectors';
 
 export default function Field() {
   const cells = useSelector((state) => state.cells);
-  const isPlaying = useSelector(isPlayingSelector);
+  const generation = useSelector((state) => state.generation);
   const dispatch = useDispatch();
 
   const clickHandler = (e) => {
-    if (isPlaying) return;
+    if (generation > 0) return;
 
     const { rowIndex } = e.target.parentElement;
     const { cellIndex } = e.target;
