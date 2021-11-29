@@ -18,9 +18,10 @@ test('switchCell switches the status of a given cell returning a new array', () 
   expect(newCells).not.toBe(cellsMock);
 });
 
-test('calculateNextCellState return a new cell array representing the next generation of cells', () => {
-  const newCells = calculateNextCellState(cellsMock);
+test('calculateNextCellState returns an object containing a new cell array representing the next generation of cells and the new population', () => {
+  const { nextCellState, nextPopulation } = calculateNextCellState(cellsMock);
 
-  expect(newCells).toEqual(steppedCellsMock);
-  expect(newCells).not.toBe(cellsMock);
+  expect(nextCellState).toEqual(steppedCellsMock);
+  expect(nextPopulation).toBe(5);
+  expect(nextCellState).not.toBe(cellsMock);
 });

@@ -2,6 +2,7 @@ import { Provider } from 'react-redux';
 import './App.css';
 import Controls from './components/Controls';
 import Field from './components/Field';
+import Info from './components/Info';
 import store from './store';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         </header>
         <Controls />
         <Field />
+        <Info />
       </div>
     </Provider>
   );

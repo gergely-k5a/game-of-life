@@ -31,7 +31,7 @@ export default function Field() {
 }
 
 const TableWrapper = (props) => (
-  <Table>
+  <Table id="gameTable">
     <tbody>{props.children}</tbody>
   </Table>
 );

@@ -4,9 +4,11 @@ import { calculateNextCellState, switchCell } from '../utils';
 
 const initialState = {
   cells: constants.BLANK_CELLS,
-  intervalID: null,
   generation: 0,
   initialCells: [],
+  initialPopulation: 0,
+  intervalID: null,
+  population: 0,
 };
 
 export default function reducer(state = initialState, action) {
@@ -17,6 +19,7 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
         cells: constants.BLANK_CELLS,
+        population: 0,
       };
 
     case PAUSE:
@@ -36,13 +39,17 @@ export default function reducer(state = initialState, action) {
         ...state,
         cells: state.initialCells,
         generation: 0,
+        population: state.initialPopulation,
       };
 
     case STEP:
+      const { nextCellState, nextPopulation } = calculateNextCellState(cells);
+
       return {
         ...state,
-        cells: calculateNextCellState(cells),
+        cells: nextCellState,
         generation: state.generation + 1,
+        population: nextPopulation,
       };
 
     case SWITCH_CELL:
@@ -51,6 +58,7 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
         cells: switchCell(cells, rowIndex, cellIndex),
+        population: state.population + 1,
       };
 
     default:

@@ -13,7 +13,7 @@ const Controls = ({
   reset,
   step,
 }) => (
-  <div>
+  <section id="controls">
     <button onClick={play}>Play</button>
     {generation === 0 ? (
       <button onClick={clear}>Clear</button>
@@ -28,7 +28,7 @@ const Controls = ({
         <button onClick={reset}>Reset</button>
       </Fragment>
     )}
-  </div>
+  </section>
 );
 
 export default connect(

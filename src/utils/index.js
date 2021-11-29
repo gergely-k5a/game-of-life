@@ -1,20 +1,26 @@
 export const calculateNextCellState = (cells) => {
   const nextCellState = deepCopyCells(cells);
   const size = cells.length;
+  let nextPopulation = 0;
 
   for (let ri = 0; ri < size; ri++) {
     for (let ci = 0; ci < size; ci++) {
       const count = countNeighbours(cells, ri, ci);
-      if (cells[ri][ci] && (count < 3 || count > 4)) {
-        nextCellState[ri][ci] = false;
+      if (cells[ri][ci]) {
+        if (count < 3 || count > 4) {
+          nextCellState[ri][ci] = false;
+        } else {
+          nextPopulation++;
+        }
       }
       if (!cells[ri][ci] && count === 3) {
         nextCellState[ri][ci] = true;
+        nextPopulation++;
       }
     }
   }
 
-  return nextCellState;
+  return { nextCellState, nextPopulation };
 };
 
 export const deepCopyCells = (cells) => {

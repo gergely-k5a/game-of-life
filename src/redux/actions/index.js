@@ -17,11 +17,13 @@ export const pause = () => (dispatch, getState) => {
 };
 
 export const play = () => (dispatch, getState) => {
-  const { cells, generation, intervalID, initialCells } = getState();
+  const { cells, generation, intervalID, initialCells, population } =
+    getState();
   if (intervalID !== null) return;
 
   const payload = {
     initialCells: generation === 0 ? deepCopyCells(cells) : initialCells,
+    initialPopulation: population,
     intervalID: setInterval(() => {
       dispatch(step());
     }, constants.DEFAULT_INTERVAL),
