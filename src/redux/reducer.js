@@ -54,11 +54,14 @@ export default function reducer(state = initialState, action) {
 
     case SWITCH_CELL:
       const { rowIndex, cellIndex } = action.payload;
+      const newCells = switchCell(cells, rowIndex, cellIndex);
 
       return {
         ...state,
-        cells: switchCell(cells, rowIndex, cellIndex),
-        population: state.population + 1,
+        cells: newCells,
+        population: cells[rowIndex][cellIndex]
+          ? state.population - 1
+          : state.population + 1,
       };
 
     default:
