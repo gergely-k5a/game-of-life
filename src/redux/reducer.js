@@ -1,9 +1,9 @@
-import { CLEAR, PLAY, PAUSE, STEP, RESET, SWITCH_CELL } from './actions';
-import { blankCells } from '../constants';
-import { countNeighbours, deepCopyCells } from '../utils';
+import { CLEAR, PLAY, PAUSE, STEP, RESET, SWITCH_CELL } from './actions/types';
+import * as constants from '../constants';
+import { calculateNextCellState, switchCell } from '../utils';
 
 const initialState = {
-  cells: blankCells,
+  cells: constants.BLANK_CELLS,
   intervalID: null,
   generation: 0,
   initialCells: [],
@@ -12,69 +12,46 @@ const initialState = {
 export default function reducer(state = initialState, action) {
   const { cells } = state;
 
-  if (action.type === SWITCH_CELL) {
-    const { x, y } = action.payload;
-    const newCellState = deepCopyCells(cells);
+  switch (action.type) {
+    case CLEAR:
+      return {
+        ...state,
+        cells: constants.BLANK_CELLS,
+      };
 
-    newCellState[x][y] = !state.cells[x][y];
+    case PAUSE:
+      return {
+        ...state,
+        intervalID: null,
+      };
 
-    return {
-      ...state,
-      cells: newCellState,
-    };
+    case PLAY:
+      return {
+        ...state,
+        ...action.payload,
+      };
+
+    case RESET:
+      return {
+        ...state,
+        cells: state.initialCells,
+        generation: 0,
+      };
+
+    case STEP:
+      return {
+        ...state,
+        cells: calculateNextCellState(cells),
+        generation: state.generation + 1,
+      };
+
+    case SWITCH_CELL:
+      return {
+        ...state,
+        cells: switchCell(cells, action.payload),
+      };
+
+    default:
+      return state;
   }
-
-  if (action.type === STEP) {
-    const newCellState = deepCopyCells(cells);
-    const size = cells.length;
-
-    for (let ri = 0; ri < size; ri++) {
-      for (let ci = 0; ci < size; ci++) {
-        const count = countNeighbours(ri, ci, cells);
-        if (cells[ri][ci] && (count < 3 || count > 4)) {
-          newCellState[ri][ci] = false;
-        }
-        if (!cells[ri][ci] && count === 3) {
-          newCellState[ri][ci] = true;
-        }
-      }
-    }
-
-    return {
-      ...state,
-      cells: newCellState,
-      generation: state.generation + 1,
-    };
-  }
-
-  if (action.type === CLEAR) {
-    return {
-      ...state,
-      cells: blankCells,
-    };
-  }
-
-  if (action.type === PLAY) {
-    return {
-      ...state,
-      ...action.payload,
-    };
-  }
-
-  if (action.type === PAUSE) {
-    return {
-      ...state,
-      intervalID: null,
-    };
-  }
-
-  if (action.type === RESET) {
-    return {
-      ...state,
-      cells: state.initialCells,
-      generation: 0,
-    };
-  }
-
-  return state;
 }

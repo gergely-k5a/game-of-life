@@ -1,7 +1,7 @@
-export const defaultSize = 30;
+export const DEFAULT_SIZE = 30;
 
-export const defaultInterval = 100;
+export const DEFAULT_INTERVAL = 100;
 
-export const blankCells = Array(defaultSize)
+export const BLANK_CELLS = Array(DEFAULT_SIZE)
   .fill(null)
-  .map(() => Array(defaultSize).fill(false));
+  .map(() => Array(DEFAULT_SIZE).fill(false));

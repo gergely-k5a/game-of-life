@@ -1,8 +1,8 @@
 import { Fragment } from 'react';
 import { connect } from 'react-redux';
 
-import { clear, pause, play, reset, step } from '../../redux/actions';
-import { isPlayingSelector } from '../../redux/selectors';
+import { clear, pause, play, reset, step } from '../redux/actions';
+import { isPlayingSelector } from '../redux/selectors';
 
 const Controls = ({
   clear,

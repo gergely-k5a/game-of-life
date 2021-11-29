@@ -1,5 +1,6 @@
 import { Provider } from 'react-redux';
 import './App.css';
+import Controls from './components/Controls';
 import Field from './components/Field';
 import store from './store';
 
@@ -10,6 +11,7 @@ function App() {
         <header className="App-header">
           <h1>Game of Life</h1>
         </header>
+        <Controls />
         <Field />
       </div>
     </Provider>
